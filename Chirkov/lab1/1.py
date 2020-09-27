@@ -1,3 +1,4 @@
+from copy import deepcopy
 def bt(m, res, n, x, y):
     """
     рекурсивная функция обхода квадрата
@@ -11,22 +12,29 @@ def bt(m, res, n, x, y):
     global res_min
     global free
     global use
+    global c1
+    global c2
+    global c3
+    global c4
     if use[0]>-(-len(m) // 2): #пропуск лишних вариантов, если есть обязательный квадрат больше ceil(n//2)
         if res:
             a = res[0].split(' ')
             if int(a[0])!=1:
+                c1+=1
                 return
             if int(a[1])!=1:
+                c1+=1
                 return
             if int(a[2])<use[0]:
+                c1+=1
                 return
         if len(res)>1 and len(use)>1:
             a = res[1].split(' ')
             if int(a[2])<use[1]:
+                c1+=1
                 return
-    if res_min <= len(res): #пропуск лишних вариантов, относительно промежуточного найденного решения
-        return
     if IsPlace(n)+len(res)>=res_min: #пропуск лишних вариантов, относительно возможной оставшейся свободной площади
+        c2+=1
         return
     if n==1: #единичные квадраты выставляются не в основном цикле, чтобы не было дополнительных итераций
         for i in range(len(m)):
@@ -39,7 +47,8 @@ def bt(m, res, n, x, y):
             for i in range(x,x+1):             #проход текущей строки до её конца
                   for j in range(y,len(m)-n+1):
                       if check(m, i, j, n):
-                          sqnew(m, i, j, n, res)    
+                          sqnew(m, i, j, n, res)
+                          c3+=1
                           free-=n*n
                           if j==len(m)-(n-1):
                               bt(m, res, n, i+1,0)  
@@ -52,6 +61,7 @@ def bt(m, res, n, x, y):
                   for j in range(len(m)-n+1):           
                       if check(m, i, j, n):
                           sqnew(m, i, j, n, res)
+                          c3+=1
                           free-=n*n  
                           if j==len(m)-(n-1):
                               bt(m, res, n, i+1,0)  
@@ -60,30 +70,48 @@ def bt(m, res, n, x, y):
                           sqdel(m, res)
                           free+=n*n
         bt(m, res, n-1, 0, 0)
-    if free==0:       #проверка на возможный ответ
+    if free==0:#проверка на возможный ответ
         if res_min > len(res):
-            for s in use: #проверка на обязательные квадраты
-                flag=0
-                for item in res:
-                    a= item.split(' ')
-                    if str(s)==a[2]:
-                        flag=1
+            flag=0
+            if len(use) == len(set(use)):
+                for s in use: #проверка на обязательные квадраты
+                    for item in res:
+                        a= item.split(' ')
+                        if str(s)==a[2]:
+                            flag=1
+                            break
+                    if flag==0:
                         break
-                if flag==0:
-                    break
+            else:
+                cnt=0
+                res1 = deepcopy(res)
+                res2 = deepcopy(res)
+                for s in use: #проверка на обязательные квадраты
+                    for item in res1:
+                        a= item.split(' ')
+                        if str(s)==a[2]:
+                            res2.remove(item)
+                            cnt+=1
+                            break
+                    res1 = deepcopy(res2)
+                if cnt==len(use):
+                    flag=1
             if flag==1:  #сохранение ответа
                 res_min = len(res)
                 t=list(res)
                 print(res_min,'квадратов - вероятный ответ:',t)
+                print()
+                printsq(m)
+                print()
         
         allsqdel(m, res)
-       
+
 def sqnew(m, x, y, n, res): #установка квадрата
     for i in range(n):
         for j in range(n):
-            m[x+i][y+j]=1
+            m[x+i][y+j]=n
     res.append(str(x+1)+' '+str(y+1)+' '+str(n))
-    
+
 def sqdel(m, res): #удаление квадрата
     if res:
         x = res[len(res)-1].split(' ')
@@ -91,7 +119,7 @@ def sqdel(m, res): #удаление квадрата
             for j in range(int(x[2])):
                 m[int(x[0])+i-1][int(x[1])+j-1]=0
         res.pop()
-        
+
 def allsqdel(m, res): #удаление всех единичных квадратов
     global free
     while len(res)>0:
@@ -101,14 +129,15 @@ def allsqdel(m, res): #удаление всех единичных квадра
             free+=1
         else:
             break
-    
+
 def printsq(m): #промежуточный вывод двумерного массива
+    print('---------------',end='\n')
     for i in range(len(m)):
         for j in range(len(m)):
             print(m[i][j],end=' ')
         print("\n")
     print('---------------')
-    
+
 def check(m,x,y,n): #проверка можно ли поставить квадрат
     for i in range(n):
         for j in range(n):
@@ -134,6 +163,10 @@ def GetSimple(p): #приведение к простому числу
 
 print('введите длину квадрата')
 c = int(input())
+c1 = 0
+c2 = 0
+c3 = 0
+c4 = 0
 print("введите длины квадрата, которые обязательны для ответа (через пробел), 0 - если неважно")
 use = list(map(int,input().split(' ')))
 if use == [0]:
@@ -145,18 +178,24 @@ for i in range(c):
 n = -(-c // 2)
 res = []
 t = []
+stop=0
 res_min = c*c
 use.sort(reverse = True)
 summ=0
 for s in use:
     summ+=s*s
 if summ > c*c:
-    print("Нет решения")    
+    print("нет решения")    
 else:
     if use[0]<=n:
         bt(b, res, n, 0, 0)
     else:
         bt(b, res, use[0], 0, 0)
+    print('количество прерываний функции из-за большого обязательного квадрата',c1)
+    print('количество прерываний функции из-за превышения длины найденного решения',c2)
+    print('всего поставлено',c3,'квадратов')
+    print('рекурсия',c4,'раз')
+    print()
     if res_min!=c*c and t!=[]:
         print(res_min,"квадратов - минимальное замощение")
         #print("координаты и длина квадратов:")
@@ -167,4 +206,4 @@ else:
             q[2]=int(q[2])
             print(q[0], q[1], q[2])
     else:
-        print("Нет решения")
+        print("нет решения")
