@@ -31,10 +31,10 @@ int main()
         cout<<"слишком много потоков"<<endl;
         return 0;
     }
-    for(int c=0;c<thread;c++)
+    for(int c=0;c<thread;c++) //цикл по шаблону, разделенный на thread потоков
     {
         cout<<"текущий поток "<<c+1<<endl;
-        while(i!=(c+1)*round(n/thread))
+        while(i!=(c+1)*round(n/thread)) //инициализация префикс-функции
         {
             if(p[i]==p[j])
             {
@@ -95,16 +95,16 @@ int main()
     cout<<endl;
     i=0;
     j=0;
-    for(int c=0;c<thread;c++)
+    for(int c=0;c<thread;c++) //цикл по тексту, разделенный на thread потоков
     {
         cout<<endl<<"текущий поток "<<c+1<<endl;
-        while(i!=(c+1)*round(m/thread))
+        while(i!=(c+1)*round(m/thread))  //идем по round(len(b)/thread) символов каждый раз
         {
-            if(p[j]==t[i])
+            if(p[j]==t[i]) //cовпал ли символ шаблон?
             {
                 if(pp.size()-1==j)
                 {
-                    ans.push_back(i-j);
+                    ans.push_back(i-j); //сохраняем, если шаблон пройден
                     cout<<"найдено новое решение "<<i-j<<endl;
                     fl=1;
                     if(j!=0)
@@ -121,11 +121,11 @@ int main()
             }
             else
             {
-                if(j!=0)
+                if(j!=0) //иначе - переход по префикс-функции
                 {
                     j=pp[j-1];
                 }
-                else
+                else  //если в начале шаблона - следующий символ
                 {
                     i++;
                 }
@@ -133,7 +133,7 @@ int main()
 
         }
     }  
-    while(t[i]!='\0')
+    while(t[i]!='\0') //обработка оставшейся части слова (если не делится на равные части)
     {
         if(p[j]==t[i])
         {
