@@ -14,12 +14,12 @@ int main()
     int i,j,fl=0;
     vector <int> pp;
     vector <int> ans;
-    cout << "??????? ?????? ??????" << endl;
+    cout << "введите первую строку" << endl;
     getline(cin,p);
-    cout << "??????? ?????? ??????" << endl;
+    cout << "введите вторую строку" << endl;
     getline(cin,t);
     int thread;
-    cout << "??????? ?????????? ???????" << endl;
+    cout << "введите количество потоков" << endl;
     cin >> thread;
     int n=p.length();
     int m=t.length();
@@ -29,18 +29,18 @@ int main()
     j=0;
     if(thread>n)
     {
-        cout<<"??????? ????? ???????"<<endl;
+        cout<<"слишком много потоков"<<endl;
         return 0;
     }
     for(int c=0;c<thread;c++)
     {
-        cout<<"??????? ????? "<<c+1<<endl;
+        cout<<"текущий поток "<<c+1<<endl;
         while(i!=(c+1)*round(n/thread))
         {
             if(p[i]==p[j])
             {
                 pp.push_back(j+1);
-                cout<<"??????? ????? ???????? p("<<i<<") = "<< j+1<<endl;
+                cout<<"найдено новое значение p("<<i<<") = "<< j+1<<endl;
                 j++;
                 i++;
             }
@@ -71,7 +71,7 @@ int main()
         if(p[i]==p[j])
         {
             pp.push_back(j+1);
-            cout<<"??????? ????? ???????? p("<<i<<") = "<< j+1<<endl;
+            cout<<"найдено новое значение p("<<i<<") = "<< j+1<<endl;
             j++;
             i++;
         }
@@ -88,7 +88,7 @@ int main()
             }
         }
     }    
-    cout<<endl<<"???????-??????? ???????:"<<endl<<endl<<pp[0];
+    cout<<endl<<"префикс-функция создана:"<<endl<<endl<<pp[0];
     for(int l=1;l<n;l++)
     {
         cout<<","<<pp[l];
@@ -98,7 +98,7 @@ int main()
     j=0;
     for(int c=0;c<thread;c++)
     {
-        cout<<endl<<"??????? ????? "<<c+1<<endl;
+        cout<<endl<<"текущий поток "<<c+1<<endl;
         while(i!=(c+1)*round(m/thread))
         {
             if(p[j]==t[i])
@@ -106,7 +106,7 @@ int main()
                 if(pp.size()-1==j)
                 {
                     ans.push_back(i-j);
-                    cout<<"??????? ????? ??????? "<<i-j<<endl;
+                    cout<<"найдено новое решение "<<i-j<<endl;
                     fl=1;
                     if(j!=0)
                         j=pp[j-1];
@@ -141,7 +141,7 @@ int main()
             if(pp.size()-1==j)
             {
                 ans.push_back(i-j);
-                cout<<"??????? ????? ??????? "<<i-j<<endl;
+                cout<<"найдено новое решение "<<i-j<<endl;
                 fl=1;
                 if(j!=0)
                     j=pp[j-1];
@@ -173,7 +173,7 @@ int main()
         cout<<"-1";
         return 0;
     }
-    cout<<endl<<"?????"<<endl<<ans[0];
+    cout<<endl<<"ответ"<<endl<<ans[0];
     for(int u=1;u<ans.size();u++)
     {
         cout<<","<<ans[u];
