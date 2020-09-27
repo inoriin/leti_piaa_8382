@@ -1,1 +1,1 @@
-#Онлайн компилятор для запуска кода: https://repl.it/repls/HandsomeLittleInterfacestandard
+#Онлайн компилятор для запуска кода: https://www.onlinegdb.com/online_c++_compiler
