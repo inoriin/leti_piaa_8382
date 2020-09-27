@@ -17,7 +17,7 @@ while 1:                #добавление ребер в словарь
 print("граф до сортировки рёбер")
 print(graph)
 for keyg, value in graph.items():  #сортировка словаря по приоритету
-  value.sort(key=lambda x: (x[1]-ord(keyg)+ord(z[1]),x[0]))
+  value.sort(key=lambda x: (-ord(keyg)+ord(z[1]),x[0]))
 print("граф после сортировки рёбер")  
 print(graph)
 print()
