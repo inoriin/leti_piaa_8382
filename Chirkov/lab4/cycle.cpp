@@ -15,9 +15,9 @@ int main()
     vector <int> pp;
     vector <int> ans;
     cout << "введите первую строку" << endl;
-    getline(cin,p);
-    cout << "введите вторую строку" << endl;
     getline(cin,t);
+    cout << "введите вторую строку" << endl;
+    getline(cin,p);
     int thread;
     cout << "введите количество потоков" << endl;
     cin >> thread;
