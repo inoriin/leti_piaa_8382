@@ -4,16 +4,28 @@ class AhoNode:  #класс для построения бора (goto - воз�
         self.out = []
         self.fail = None
         self.isterm = False
-
+        self.index =0
+        
 def aho_create_bor(patterns): #построение бора вместе с суффиксными и конечными ссылками по массиву строк
     root = AhoNode()
     count = 1
+    ind=0
+    root.index=ind
     maxcount1 = 1
     maxcount2 = 0
     for i in range(len(patterns)):  #инициализация структуры бора
         node = root
         for symbol in patterns[i]:
+            flag=1
+            for key in node.goto.keys():
+                if key==symbol:
+                    flag=0
+                    break
+
             node = node.goto.setdefault(symbol, AhoNode())
+            if flag==1:
+                ind+=1
+                node.index=ind
         node.out.append([i,len(patterns[i])])
         node.isterm = True
     queue = []
@@ -69,17 +81,27 @@ def aho_create_bor(patterns): #построение бора вместе с с�
 def aho_find_all(s, root): #реализация алгоритма поиска по строке и бору
     node = root
     ans = []
+    print()
+    print('--------------старт алгоритма-------------')
+    print()
     for i in range(len(s)):
+        print('находимся в вершине с индексом ', node.index)
         while node is not None and s[i] not in node.goto: #пока находимся не в корне и некуда идти по бору
             node = node.fail                              #переход по суффиксной ссылке
-            print('перешли по суффиксной ссылке, обрабатывая символ',s[i])
+            if node is None:
+                print('перешли по суффиксной ссылке в корень, обрабатывая символ ', s[i])
+            else:    
+                print('перешли по суффиксной ссылке, обрабатывая символ ',s[i],' в вершину с индексом ', node.index)
         if node is None:
             node = root
+            print()
             continue
         node = node.goto[s[i]]                            #шаг вперед
+        print('перешли по символу ', s[i] ,' в вершину с индексом', node.index)
         for pattern in node.out:                          #cохранение ответа
             print('найдено решение на',i - pattern[1] + 2,'символе, шаблон номер',pattern[0]+1)
             ans.append([i - pattern[1] + 2, pattern[0]+1])
+        print()    
     print()
     ans.sort(key=lambda x: (x[0],x[1]))        
     return ans
@@ -91,32 +113,31 @@ def print_bor(root):                        #промежуточный выво
     queue = []
     for key, node in root.goto.items():
         queue.append(node)
-    print('можем пойти в следующие вершины из корня',end = ' : ')
+    print('находимся в корне с индексом ', root.index)    
+    print('можем пойти в следующие вершины из корня',end = ' : \n')
     tmp = []
-    for key in root.goto.keys():
-            print(key, end=' ')
+    for key,node in root.goto.items():
+            print('[',key,'] c индексом ', node.index, ' ')
             tmp.append(key)
-    print()
     print()
     while len(queue) > 0:
         rnode = queue.pop(0)
-        print('можем пойти в следующие вершины из', tmp[0],end=' : ')
+        print('находимся в вершине [', tmp[0],'] с индексом ', rnode.index)
+        print('можем пойти в следующие вершины' ,end=' : \n')
         tmp.pop(0)
         if not rnode.goto.items():
             print('-')
         for key, node in rnode.goto.items():
             tmp.append(key)
-            print(key, end=' ')
+            print('[',key ,'] с индексом ',node.index, end=' ')
             print()
-            print('суффиксная ссылка указывает на возможные переходы',list(rnode.fail.goto.keys()))
             queue.append(node)
             if node.out:
-                print(key,end=' терминальная для ')
+                print('[',key,end=' ] терминальная для ')
                 for term in node.out:
                     print(term[0]+1,end=' ')
-                print()
-        if not rnode.goto.items():
-            print('суффиксная ссылка указывает на возможные переходы',list(rnode.fail.goto.keys()))
+                print('шаблона(ов)')
+        print('суффиксная ссылка указывает на вершину с индексом ',rnode.fail.index)
         print()
     
 print('введите строку для поиска')
@@ -130,22 +151,33 @@ joker = input()
 count = [0]*len(s)
 string = ''
 n = 0
+num=1
 flag = 1
+print('разбиваем шаблон с джокером на несколько шаблонов')
+print()
 for symb in pat:
     n+=1
+    print('рассматриваем символ ',symb)
     if symb!=joker:
         if flag==1:
             startpos.append(n)
             string = ''
         string+=symb
+        print('символ добавлен к текущему шаблону')
         flag = 0
     else:
         flag = 1
         if string:
             patterns.append(string)
+            print('добавлен новый шаблон [',string, '] под номером ', num)
+            num+=1
+        else:
+            print('идем к следующему символу')
         string = ''
+    print()    
 if string:
     patterns.append(string)
+    print('добавлен новый шаблон [',string, '] под номером ', num)
 root = aho_create_bor(patterns)
 print_bor(root)
 for item in aho_find_all(s, root):
